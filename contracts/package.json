@@ -1,0 +1,15 @@
+{
+  "name": "anjung-contracts",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "postman": "node postman/build.mjs",
+    "postman:check": "node postman/build.mjs --check",
+    "postman:flows": "node postman/run-flows.mjs"
+  },
+  "devDependencies": {
+    "newman": "^6.2.3",
+    "openapi-to-postmanv2": "^6.4.4"
+  }
+}
