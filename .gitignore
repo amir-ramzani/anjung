@@ -1,0 +1,36 @@
+# Dependencies and build output
+node_modules/
+.venv/
+dist/
+cdk.out/
+
+# Python caches
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Test reports
+test-results/
+playwright-report/
+coverage/
+
+# Local settings and secrets: keep only the examples
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.crt
+
+# Machine-local files (editor, OS, Claude Code session state, NAS image bundles)
+.claude/settings.local.json
+.claude/*.lock
+.DS_Store
+.idea/
+.vscode/
+*.log
+*.tar.gz
