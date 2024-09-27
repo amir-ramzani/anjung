@@ -1,0 +1,3 @@
+Hi $name, welcome! $org_name has set up your tenant account. You can use it to see your bills, pay rent and report repairs.
+Set your password here: $link
+This link works once and expires on $expires. Do not share it.

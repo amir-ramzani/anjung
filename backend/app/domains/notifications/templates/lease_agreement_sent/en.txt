@@ -1,0 +1,2 @@
+Your tenancy agreement for the lease starting $start_date is ready.
+Please sign in to review it and sign: $link

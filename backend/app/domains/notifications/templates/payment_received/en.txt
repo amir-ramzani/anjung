@@ -1,0 +1,2 @@
+We received your payment of $amount for invoice $number. Thank you.
+Receipt: $receipt_link

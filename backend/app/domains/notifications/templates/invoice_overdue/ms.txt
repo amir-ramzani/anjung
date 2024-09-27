@@ -1,0 +1,2 @@
+Invois $number sebanyak $amount sepatutnya dibayar pada $due_date dan kini tertunggak.
+Bayar di sini: $pay_link

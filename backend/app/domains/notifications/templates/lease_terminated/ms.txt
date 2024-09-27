@@ -1,0 +1,2 @@
+Penyewaan anda tamat pada $end_date.
+Lihat butiran: $link

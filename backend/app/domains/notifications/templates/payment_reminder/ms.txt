@@ -1,0 +1,2 @@
+Peringatan: invois $number sebanyak $amount perlu dibayar pada $due_date.
+Bayar di sini: $pay_link

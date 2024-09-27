@@ -1,0 +1,2 @@
+Your maintenance request is now: $status.
+See details: $link

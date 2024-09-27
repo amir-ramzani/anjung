@@ -1,0 +1,2 @@
+Kami telah menerima bayaran $amount untuk invois $number. Terima kasih.
+Resit: $receipt_link

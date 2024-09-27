@@ -1,0 +1,2 @@
+Penyewaan anda yang bermula $start_date kini aktif.
+Lihat di sini: $link

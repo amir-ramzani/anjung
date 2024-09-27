@@ -1,0 +1,2 @@
+Your privacy request is now: $status.
+See details: $link

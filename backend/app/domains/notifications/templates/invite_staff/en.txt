@@ -1,0 +1,3 @@
+Hi $name, welcome! $org_name has added you as $role. Sign in with $email.
+Set your password here: $link
+This link works once and expires on $expires. Do not share it.

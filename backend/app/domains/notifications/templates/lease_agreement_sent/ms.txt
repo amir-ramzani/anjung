@@ -1,0 +1,2 @@
+Perjanjian sewa anda untuk sewaan bermula $start_date sudah sedia.
+Sila log masuk untuk menyemak dan menandatanganinya: $link

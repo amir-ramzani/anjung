@@ -1,0 +1,2 @@
+Your tenancy starting $start_date is now active.
+See it here: $link

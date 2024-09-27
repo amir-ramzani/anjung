@@ -1,0 +1,3 @@
+Your Anjung plan for $org_name ends on $until ($days day(s) from now).
+After that your staff can still view and export, and tenants can still pay, but nobody can make changes for $grace_days days. Then the organisation closes until it is renewed.
+To renew or change your plan, contact Anjung.

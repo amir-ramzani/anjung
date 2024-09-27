@@ -1,0 +1,3 @@
+Hai $name, selamat datang! $org_name telah menyediakan akaun penyewa anda. Anda boleh menggunakannya untuk melihat bil, membayar sewa dan melaporkan kerosakan.
+Tetapkan kata laluan anda di sini: $link
+Pautan ini boleh digunakan sekali sahaja dan tamat pada $expires. Jangan kongsikannya.

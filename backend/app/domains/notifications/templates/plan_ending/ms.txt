@@ -1,0 +1,3 @@
+Pelan Anjung untuk $org_name tamat pada $until ($days hari lagi).
+Selepas itu kakitangan anda masih boleh melihat dan mengeksport, dan penyewa masih boleh membayar, tetapi tiada perubahan boleh dibuat selama $grace_days hari. Kemudian organisasi ditutup sehingga diperbaharui.
+Untuk memperbaharui atau menukar pelan anda, hubungi Anjung.

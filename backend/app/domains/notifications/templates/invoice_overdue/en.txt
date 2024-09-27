@@ -1,0 +1,2 @@
+Invoice $number for $amount was due on $due_date and is now overdue.
+Pay here: $pay_link
