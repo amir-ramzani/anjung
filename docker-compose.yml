@@ -1,0 +1,46 @@
+# Everything for local development, no AWS account needed:
+#   docker compose up --build
+# API:  http://localhost:8080  (docs at /docs)   Token: POST /dev/token {"email": "..."}
+# Data persists in the `ddb-data` volume. Reset with: docker compose down -v
+services:
+  dynamodb:
+    image: amazon/dynamodb-local:latest
+    command: ["-jar", "DynamoDBLocal.jar", "-sharedDb", "-dbPath", "/data"]
+    user: root
+    ports: ["8000:8000"]
+    volumes: ["ddb-data:/data"]
+
+  s3:                  # S3 stand-in for documents (moto: no size/policy enforcement, unlike real S3)
+    image: python:3.12-slim
+    command: >
+      sh -c "pip install -q --no-cache-dir 'moto[server]' && exec moto_server -H 0.0.0.0 -p 9000"
+    ports: ["9000:9000"]
+
+  api:
+    build: ./backend
+    depends_on: [dynamodb, s3]
+    ports: ["8080:8080"]
+    environment: &env
+      ENV: local
+      AUTH_MODE: mock          # local only: adds POST /dev/token, no Cognito needed
+      AWS_REGION: ap-southeast-1
+      AWS_ACCESS_KEY_ID: local
+      AWS_SECRET_ACCESS_KEY: local
+      DOCS_BUCKET: anjung-docs
+      S3_ENDPOINT_URL: http://s3:9000
+      S3_PUBLIC_ENDPOINT_URL: http://localhost:9000   # host used in presigned URLs (your browser)
+      DYNAMODB_ENDPOINT_URL: http://dynamodb:8000
+      TABLE_NAME: anjung-main
+      COGNITO_POOL_ID: ap-southeast-1_local
+      COGNITO_CLIENT_IDS: local-client
+      PLATFORM_ORG_ID: 01JD8Z3K9Q4M7T2V6X8B5N1C0A
+      CURSOR_HMAC_KEYS: local-dev-cursor-key-local-dev-cursor-key
+      CORS_ALLOW_ORIGINS: http://localhost:5173
+    # idempotent setup, then serve
+    command: >
+      sh -c "python -m app.cli create-table &&
+             python -m app.cli bootstrap-platform --email ${PLATFORM_ADMIN_EMAIL:-root@example.com} &&
+             exec uvicorn app.main:app_factory --factory --host 0.0.0.0 --port 8080"
+
+volumes:
+  ddb-data:
