@@ -1,0 +1,73 @@
+# Home-network DEMO on a NAS (mock auth: email-only sign-in, no passwords). Never expose these ports to the internet.
+#
+# Images are built on a PC and loaded on the NAS (see docs/nas-deploy.md):
+#   docker build -t anjung-api backend && docker build -t anjung-web frontend
+#
+# Set NAS_HOST to the NAS's LAN address (an .env file next to this one, or edit the default below), and optionally
+# NAS_NAME to its network name (e.g. mynas.local) so HTTPS also works by name.
+# App: https://<NAS_HOST>:8443 (Caddy, with its own local certificate; needs Caddyfile.nas next to this file).
+# http://<NAS_HOST>:8088 still works, without HTTPS.
+services:
+  dynamodb:
+    image: amazon/dynamodb-local:latest
+    command: ["-jar", "DynamoDBLocal.jar", "-sharedDb", "-dbPath", "/data"]
+    user: root
+    restart: unless-stopped
+    volumes: ["ddb-data:/data"]
+
+  s3:   # S3-compatible store (SeaweedFS); files live in the s3-data volume and survive restarts
+    image: chrislusf/seaweedfs:4.55
+    command: ["server", "-dir=/data", "-s3", "-s3.port=9000", "-master.volumeSizeLimitMB=256", "-volume.max=0"]
+    restart: unless-stopped
+    # browsers upload/download documents through Caddy (https://<NAS_HOST>:8443/anjung-docs/...);
+    # no port of its own is published
+    volumes: ["s3-data:/data"]
+
+  api:
+    image: anjung-api
+    depends_on: [dynamodb, s3]
+    restart: unless-stopped
+    environment:
+      ENV: local               # required for AUTH_MODE=mock
+      AUTH_MODE: mock
+      AWS_REGION: ap-southeast-1
+      AWS_ACCESS_KEY_ID: local
+      AWS_SECRET_ACCESS_KEY: local
+      DOCS_BUCKET: anjung-docs
+      S3_ENDPOINT_URL: http://s3:9000
+      S3_PUBLIC_ENDPOINT_URL: https://${NAS_HOST:-192.168.0.100}:8443   # presigned URLs, through Caddy
+      DYNAMODB_ENDPOINT_URL: http://dynamodb:8000
+      TABLE_NAME: anjung-main
+      COGNITO_POOL_ID: ap-southeast-1_local
+      COGNITO_CLIENT_IDS: local-client
+      PLATFORM_ORG_ID: 01JD8Z3K9Q4M7T2V6X8B5N1C0A
+      CURSOR_HMAC_KEYS: nas-demo-cursor-key-nas-demo-cursor-key
+      CORS_ALLOW_ORIGINS: https://${NAS_HOST:-192.168.0.100}:8443,http://${NAS_HOST:-192.168.0.100}:8088,https://${NAS_NAME:-localhost}:8443,http://${NAS_NAME:-localhost}:8088
+      APP_BASE_URL: https://${NAS_HOST:-192.168.0.100}:8443   # links in messages (set-password links) point here
+    command: >
+      sh -c "python -m app.cli create-table &&
+             python -m app.cli bootstrap-platform --email ${PLATFORM_ADMIN_EMAIL:-root@example.com} &&
+             exec uvicorn app.main:app_factory --factory --host 0.0.0.0 --port 8080"
+
+  web:
+    image: anjung-web
+    depends_on: [api]
+    restart: unless-stopped
+    ports: ["8088:80"]   # plain HTTP, kept as a fallback
+
+  https:   # HTTPS in front of the app and the document store
+    image: caddy:2.10-alpine
+    depends_on: [web, s3]
+    restart: unless-stopped
+    environment:
+      NAS_HOST: ${NAS_HOST:-192.168.0.100}
+      NAS_NAME: ${NAS_NAME:-localhost}
+    ports: ["8443:443"]
+    volumes:
+      - ./Caddyfile.nas:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data   # its certificate authority: keep it, or browsers warn again
+
+volumes:
+  ddb-data:
+  s3-data:
+  caddy-data:
